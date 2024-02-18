@@ -9,11 +9,10 @@ if __name__ == "__main__":
                          passwd=sys.argv[2], db=sys.argv[3], port=3306)
     cur = db.cursor()
     cur.execute("""SELECT cities.name FROM
-                cities WHERE cities.state_id IN 
-                (SELECT id FROM states WHERE name = %s)"""
-                , (sys.argv[4],)
+                cities INNER JOIN states ON states.id=cities.state_id
+                WHERE states.name=%s""", (sys.argv[4],))
     rows = cur.fetchall()
-    for row in rows:
-        print(row)
+    tmp = list(row[0] for row in rows)
+    print(*tmp, sep=", ")
     cur.close()
     db.close()
